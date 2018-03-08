@@ -56,9 +56,17 @@ function deploy {
 function master {
   swapoff -a
   kubeadm init --apiserver-advertise-address=$MASTER_IP --token $JOIN_TOKEN
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+  source <(kubectl completion bash)
+  echo "source <(kubectl completion bash)" >> ~/.bashrc
+  sysctl net.bridge.bridge-nf-call-iptables=1
+  export kubever=$(kubectl version | base64 | tr -d '\n')
+  kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
+
 }
 
 function slave {
+  swapoff -a
   kubeadm join $MASTER_IP:6443 --token $JOIN_TOKEN
 }
 

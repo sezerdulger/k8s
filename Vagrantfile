@@ -13,15 +13,15 @@ Vagrant.configure("2") do |config|
       #node.vm.network "forwarded_port", guest: 7077, host: 21001, host_ip: "127.0.0.1"
       
       node.vm.network "private_network", ip: "#{MASTER_NODE_IP_START}#{i}"
-      
       node.vm.synced_folder "data", "/data"
       
-      node.vm.provider "virtualbox" do |vb|
+	  #node.vm.provision "file", source: "data", destination: "data/master/"
+	  node.vm.provision "shell", path: "data/install.sh", args: "install"
+      node.vm.provision "shell", env: { "MASTER_IP": "#{MASTER_NODE_IP_START}#{i}", "JOIN_TOKEN": "#{JOIN_TOKEN}" }, path: "data/install.sh", args: "master"
+	  node.vm.provider "virtualbox" do |vb|
         vb.memory = "1024"
 		vb.cpus = 1
 	  end
-
-	 node.vm.provision "shell", path: "data/master/install.sh"
     end
   end
   
@@ -29,14 +29,17 @@ Vagrant.configure("2") do |config|
     config.vm.define "slave#{i}" do |node|
 	  node.vm.box = "bento/ubuntu-16.04"
 	  node.vm.hostname = "slave#{i}"
-      node.vm.network "private_network", ip: "#{SLAVE_NODE_IP_START}#{i}"
+	  node.vm.network "private_network", ip: "#{SLAVE_NODE_IP_START}#{i}"
 	  node.vm.synced_folder "data", "/data"
-	
+	  
+	  #node.vm.provision "file", source: "data", destination: "/root/data"
+	  node.vm.provision "shell", path: "data/install.sh", args: "install"
+	  node.vm.provision "shell", env: { "MASTER_IP": "#{MASTER_NODE_IP_START}0", "JOIN_TOKEN": "#{JOIN_TOKEN}" }, path: "data/install.sh", args: "slave"
+	  
 	  node.vm.provider "virtualbox" do |vb|
-        vb.memory = "1024"
+        vb.memory = "2048"
 		vb.cpus = 1
 	  end
-	  node.vm.provision "shell", path: "data/slave/install.sh"
 	end
   end
 end

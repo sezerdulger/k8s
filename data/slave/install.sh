@@ -38,28 +38,7 @@ EOF
   apt-get install -y kubelet=1.8.7-00 kubeadm=1.8.7-00 kubectl=1.8.7-00 kubernetes-cni=0.5.1-00
 }
 
-function deploy {
-  echo "Available services : "
-  for i in ${common_base_services[*]}; do
-    #kubectl create -f $i -R
-    echo $i
-  done
-  
-  #sleep $common_delay_after_base_services
-  
-  for i in ${common_services[*]}; do
-    #kubectl create -f $i -R
-    echo $i
-  done
-}
-
-function master {
-  swapoff -a
-  kubeadm init --apiserver-advertise-address=$MASTER_IP --token $JOIN_TOKEN
-}
-
 function slave {
   kubeadm join $MASTER_IP:6443 --token $JOIN_TOKEN
 }
-
 $@

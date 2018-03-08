@@ -36,6 +36,7 @@ deb http://apt.kubernetes.io/ kubernetes-xenial main
 EOF
   apt-get update
   apt-get install -y kubelet=1.8.7-00 kubeadm=1.8.7-00 kubectl=1.8.7-00 kubernetes-cni=0.5.1-00
+  apt-get install bash-completion
 }
 
 function deploy {
@@ -56,6 +57,7 @@ function deploy {
 function master {
   swapoff -a
   kubeadm init --apiserver-advertise-address=$MASTER_IP --token $JOIN_TOKEN
+  echo "export KUBECONFIG=/etc/kubernetes/admin.conf" >> ~/.bashrc
   export KUBECONFIG=/etc/kubernetes/admin.conf
   source <(kubectl completion bash)
   echo "source <(kubectl completion bash)" >> ~/.bashrc
@@ -68,6 +70,7 @@ function master {
 function slave {
   swapoff -a
   kubeadm join $MASTER_IP:6443 --token $JOIN_TOKEN
+  route add 10.96.0.1 gw $MASTER_IP
 }
 
 $@

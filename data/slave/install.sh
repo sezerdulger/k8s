@@ -1,5 +1,5 @@
 #!/bin/bash
-source <(grep -v '^ *#' /data/master/install.properties | grep '[^ ] *=' | awk '{split($0,a,"="); print gensub(/\./, "_", "g", a[1]) "=" a[2]}')
+source <(grep -v '^ *#' /data/slave/install.properties | grep '[^ ] *=' | awk '{split($0,a,"="); print gensub(/\./, "_", "g", a[1]) "=" a[2]}')
 
 function init {
   for i in "$@"
@@ -40,5 +40,6 @@ EOF
 
 function slave {
   kubeadm join $MASTER_IP:6443 --token $JOIN_TOKEN
+  route add 10.96.0.1 gw $MASTER_IP
 }
 $@

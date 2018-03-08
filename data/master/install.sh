@@ -56,6 +56,7 @@ function deploy {
 function master {
   swapoff -a
   kubeadm init --apiserver-advertise-address=$MASTER_IP --token $JOIN_TOKEN
+  export KUBECONFIG=/etc/kubernetes/admin.conf
 }
 
 function slave {

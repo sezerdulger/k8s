@@ -1,5 +1,5 @@
 #!/bin/bash
-source <(grep -v '^ *#' /data/install.properties | grep '[^ ] *=' | awk '{split($0,a,"="); print gensub(/\./, "_", "g", a[1]) "=" a[2]}')
+#source <(grep -v '^ *#' /data/install.properties | grep '[^ ] *=' | awk '{split($0,a,"="); print gensub(/\./, "_", "g", a[1]) "=" a[2]}')
 
 function init {
   for i in "$@"

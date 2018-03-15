@@ -1,5 +1,5 @@
 #!/bin/bash
-source <(grep -v '^ *#' /data/master/install.properties | grep '[^ ] *=' | awk '{split($0,a,"="); print gensub(/\./, "_", "g", a[1]) "=" a[2]}')
+source <(grep -v '^ *#' /data/install.properties | grep '[^ ] *=' | awk '{split($0,a,"="); print gensub(/\./, "_", "g", a[1]) "=" a[2]}')
 
 function init {
   for i in "$@"
@@ -36,6 +36,9 @@ deb http://apt.kubernetes.io/ kubernetes-xenial main
 EOF
   apt-get update
   apt-get install -y kubelet=1.8.7-00 kubeadm=1.8.7-00 kubectl=1.8.7-00 kubernetes-cni=0.5.1-00
+
+
+  #apt-get install -y kubelet=1.7.14-00 kubeadm=1.7.14-00 kubectl=1.7.14-00 kubernetes-cni=0.5.1-00
   apt-get install bash-completion
 }
 
@@ -56,21 +59,31 @@ function deploy {
 
 function master {
   swapoff -a
+  
+  #KUBELET_CGROUP_ARGS=--cgroup-driver=cgroupfs
+  #systemctl daemon-reload
+  #systemctl restart kubelet
+  #sed s/127.0.1.1/$MASTER_IP/g -i /etc/hosts
+  echo "$MASTER_IP master" >> /etc/hosts
   kubeadm init --apiserver-advertise-address=$MASTER_IP --token $JOIN_TOKEN
   echo "export KUBECONFIG=/etc/kubernetes/admin.conf" >> ~/.bashrc
   export KUBECONFIG=/etc/kubernetes/admin.conf
   source <(kubectl completion bash)
   echo "source <(kubectl completion bash)" >> ~/.bashrc
-  sysctl net.bridge.bridge-nf-call-iptables=1
+  #sysctl net.bridge.bridge-nf-call-iptables=1
+  sleep 30
   export kubever=$(kubectl version | base64 | tr -d '\n')
   kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
-
 }
 
 function slave {
   swapoff -a
-  kubeadm join $MASTER_IP:6443 --token $JOIN_TOKEN
+  #sed s/127.0.1.1/$SLAVE_IP/g -i /etc/hosts
+  echo "$SLAVE_IP $SLAVE_HOSTNAME" >> /etc/hosts
   route add 10.96.0.1 gw $MASTER_IP
+  sleep 5
+  
+  kubeadm join $MASTER_IP:6443 --token $JOIN_TOKEN
 }
 
 $@

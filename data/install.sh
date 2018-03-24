@@ -36,10 +36,7 @@ deb http://apt.kubernetes.io/ kubernetes-xenial main
 EOF
   apt-get update
   apt-get install -y kubelet=1.8.7-00 kubeadm=1.8.7-00 kubectl=1.8.7-00 kubernetes-cni=0.5.1-00
-
-
-  #apt-get install -y kubelet=1.7.14-00 kubeadm=1.7.14-00 kubectl=1.7.14-00 kubernetes-cni=0.5.1-00
-  apt-get install bash-completion
+  
 }
 
 function deploy {
@@ -74,6 +71,22 @@ function master {
   sleep 30
   export kubever=$(kubectl version | base64 | tr -d '\n')
   kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
+  
+  apt-get install -y nfs-kernel-server
+  echo "/var/nfs    *(rw,sync,no_subtree_check,no_root_squash)" >> /etc/exports
+  systemctl restart nfs-kernel-server
+
+  kubectl create ns fission
+  curl -LO https://storage.googleapis.com/kubernetes-helm/helm-v2.7.0-linux-amd64.tar.gz
+  tar xzf helm-v2.7.0-linux-amd64.tar.gz && mv linux-amd64/helm /usr/local/bin
+  kubectl create clusterrolebinding helm --clusterrole=cluster-admin --user=system:serviceaccount:kube-system:default
+  helm init
+  sleep 30
+  helm install --namespace fission --timeout 30 --set serviceType=NodePort https://github.com/fission/fission/releases/download/0.6.1/fission-all-0.6.1.tgz
+  curl -Lo fission https://github.com/fission/fission/releases/download/0.6.1/fission-cli-linux && chmod +x fission && sudo mv fission /usr/local/bin/
+  kubectl get pods --namespace=fission
+  kubectl delete pvc --namespace=fission fission-storage-pvc
+  kubectl create -f /data/fission-storage.yaml
 }
 
 function slave {
@@ -84,6 +97,8 @@ function slave {
   sleep 5
   
   kubeadm join $MASTER_IP:6443 --token $JOIN_TOKEN
+  
+  apt-get install -y nfs-common
 }
 
 $@

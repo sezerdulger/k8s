@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: fission-storage-pv
+  labels: 
+    app: fission-storage
+spec:
+  capacity:
+    storage: 8Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.40.10
+    path: "/var/nfs/fission/fission-storage"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: fission-storage-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  selector:
+    matchLabels:
+      app: fission-storage
+

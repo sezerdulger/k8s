@@ -30,3 +30,11 @@ run below to login slave#{i}:
 ```
 vagrant ssh slave1
 ```
+
+fission is installed to master if you are interested to serverless programming.
+
+You can tail setup logs from /root/fission.log
+Also you can test hello world function:
+```
+fission function test --name hello
+```

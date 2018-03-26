@@ -81,7 +81,7 @@ function master {
   mkdir -p /var/nfs/fission/fission-storage
   
   touch /root/fission.log
-
+  /data/fission.sh > /root/fission.log & 2>&1
 }
 
 function slave {

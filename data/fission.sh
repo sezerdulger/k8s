@@ -32,13 +32,13 @@
   helm install --namespace fission --timeout 90 --set serviceType=NodePort https://github.com/fission/fission/releases/download/0.6.1/fission-all-0.6.1.tgz
   sleep 10
   curl -Lo fission https://github.com/fission/fission/releases/download/0.6.1/fission-cli-linux && chmod +x fission && sudo mv fission /usr/local/bin/
-  kubectl get pods --namespace=fission
+  
   
   while true; do
       nonreadypods=$(kubectl get pods --no-headers --namespace=fission | awk '{print $3}' | grep -w Pending | wc -l)
 	  readypods=$(kubectl get pods --no-headers --namespace=fission | awk '{print $3}' | grep -w Running | wc -l)
 	  echo "nonreadypods in fission: $nonreadypods"
-      if [[ $nonreadypods -eq 1 ]] && [[ $readypods -eq 11 ]]; then
+      if [[ $nonreadypods -eq 1 ]] && [[ $readypods -gt 9 ]]; then
         break
       fi
 	sleep 5

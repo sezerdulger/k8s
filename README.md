@@ -7,15 +7,15 @@ Slave memory and cpu size can be provisioned in Vagrantfile:
 ```
   (1..WORKER_COUNT).each do |i|
     config.vm.define "slave#{i}" do |node|
-	  node.vm.box = "sdulger/k8s"
-	  
-	  ...
-	  
-	  node.vm.provider "virtualbox" do |vb|
+      node.vm.box = "sdulger/k8s"
+      
+      ...
+      
+      node.vm.provider "virtualbox" do |vb|
         ###vb.memory = "2048"
-		###vb.cpus = 2
-	  end
-	end
+        ###vb.cpus = 2
+      end
+    end
 ```
 
 run below to setup cluster:

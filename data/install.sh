@@ -20,8 +20,10 @@ function init {
 init $@
 
 function install {
+
   apt-get clean
   rm -r /var/lib/apt/lists/*
+
   echo "Installing docker-ce..."
   apt-get update
   apt-get install -y apt-transport-https ca-certificates curl software-properties-common
@@ -79,7 +81,7 @@ function master {
   mkdir -p /var/nfs/fission/fission-storage
   
   touch /root/fission.log
-  #/data/fission.sh > /root/fission.log 2>&1 &
+
 }
 
 function slave {

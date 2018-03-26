@@ -20,6 +20,7 @@ Vagrant.configure("2") do |config|
       node.vm.provision "shell", env: { "MASTER_IP": "#{MASTER_NODE_IP_START}#{i}", 
 										"JOIN_TOKEN": "#{JOIN_TOKEN}" }, path: "data/install.sh", args: "master"
 	  #node.vm.provision "shell", path: "data/fission.sh", args: "fission"
+
 	  node.vm.provider "virtualbox" do |vb|
         vb.memory = "1024"
 		vb.cpus = 1
@@ -30,6 +31,7 @@ Vagrant.configure("2") do |config|
   (1..WORKER_COUNT).each do |i|
     config.vm.define "slave#{i}" do |node|
 	  node.vm.box = "sdulger/k8s"
+
 	  node.vm.hostname = "slave#{i}"
 	  node.vm.network "private_network", ip: "#{SLAVE_NODE_IP_START}#{i}"
 	  node.vm.synced_folder "data", "/data"
@@ -48,3 +50,4 @@ Vagrant.configure("2") do |config|
 	end
   end
 end
+

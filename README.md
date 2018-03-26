@@ -19,15 +19,14 @@ Slave memory and cpu size can be provisioned in Vagrantfile:
 ```
 
 run below to setup cluster:
-
+```
 vagrant up
-
+```
 run below to login master
-
+```
 vagrant ssh master
-
+```
 run below to login slave#{i}:
-
-vagrant ssh slave#{i}
-
-ex: vagrant ssh slave1
+```
+vagrant ssh slave1
+```

@@ -33,8 +33,13 @@ vagrant ssh slave1
 
 fission is installed to master if you are interested to serverless programming.
 
-You can tail setup logs from /root/fission.log
-Also you can test hello world function:
+See setup logs from /root/fission.log
+Test hello world fission function:
 ```
 fission function test --name hello
+```
+
+Fission pods:
+```
+kubectl get pod --namespace=fission
 ```
